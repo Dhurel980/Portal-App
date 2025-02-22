@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terms and Conditions</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            color: #555;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: linear-gradient(135deg, #a8edea, #fed6e3);
+            padding: 20px;
+            box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar h2 {
+            font-size: 22px;
+            margin-bottom: 10px;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar ul li {
+            padding: 15px;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: background 0.3s;
+        }
+
+        .sidebar ul li:hover, .sidebar ul li.active {
+            background: #e6e6e6;
+        }
+
+        .sidebar ul li a {
+            text-decoration: none;
+            color: inherit; /* Inherit color from parent */
+        }
+
+        /* Main Content */
+        #content {
+            margin-left: 290px; /* Adjust for sidebar width */
+            padding: 30px;
+            flex-grow: 1;
+            width: calc(100% - 260px); /* Adjust for sidebar width */
+        }
+
+        #link {
+            text-decoration: none;
+        }
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                text-align: center;
+            }
+
+            #content {
+                margin-left: 0;
+                padding: 15px;
+            }
+        }
+
+        h1, h2, h3 {
+            color: #333;
+        }
+
+        p {
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <aside class="sidebar">
+            <h2>Elevate Workforce Solutions</h2>
+            <nav>
+                <ul>
+                    <li class="<%= (page === 'company') ? 'active' : '' %>">
+                        <a href="/company">Home</a>
+                    </li>
+                    <li class="<%= (page === 'job') ? 'active' : '' %>">
+                        <a href="/companyJobs">Job</a>
+                    </li>
+                    <li class="<%= (page === 'companyjobApplications') ? 'active' : '' %>">
+                        <a href="/companyCompany">Job Applications</a>
+                    </li>
+                    <li class="<%= (page === 'contact') ? 'active' : '' %>">
+                        <a href="/contactCompany">Contact</a>
+                    </li>
+                    <li class="<%= (page === 'terms') ? 'active' : '' %>">
+                        <a href="/termsCompany">Terms & Conditions</a>
+                    </li>
+                    <li class="<%= (page === 'aboutme') ? 'active' : '' %>">
+                        <a href="/mePage">Me</a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+    </nav>
+
+    <!-- Main Content -->
+    <div id="content">
+        <h1>Terms and Conditions</h1>
+        <p>Welcome to Elevate Workforce Solutions! These terms and conditions outline the rules and regulations for the use of our job portal.</p>
+
+        <h2>1. Acceptance of Terms</h2>
+        <p>By accessing this website, you accept these terms and conditions in full. If you disagree with any part of these terms, you must not use our website.</p>
+
+        <h2>2. Changes to Terms</h2>
+        <p>We reserve the right to modify these terms at any time. Any changes will be effective immediately upon posting on this page. Your continued use of the site after any changes constitutes your acceptance of the new terms.</p>
+
+        <h2>3. User Responsibilities</h2>
+        <p>As a user of our job portal, you agree to:</p>
+        <ul>
+            <li>Provide accurate and truthful information when creating your profile.</li>
+            <li>Use the portal only for lawful purposes.</li>
+            <li>Not engage in any activity that could harm the website or its users.</li>
+        </ul>
+
+        <h2>4. Job Listings</h2>
+        <p>We strive to provide accurate job listings; however, we do not guarantee the accuracy or completeness of any job postings. We are not responsible for any interactions between users and employers.</p>
+
+        <h2>5. Intellectual Property</h2>
+        <p>All content on this website, including text, graphics, logos, and software, is the property of Elevate Workforce Solutions or its content suppliers and is protected by copyright and other intellectual property laws.</p>
+
+        <h2>6. Limitation of Liability</h2>
+        <p>In no event shall Elevate Workforce Solutions be liable for any direct, indirect, incidental, special, or consequential damages arising out of or in any way connected with the use of this website or the services provided.</p>
+
+        <h2>7. Governing Law</h2>
+        <p>These terms and conditions are governed by and construed in accordance with the laws of the jurisdiction in which Elevate Workforce Solutions operates.</p>
+
+        <h2>8. Contact Information</h2>
+        <p>If you have any questions about these terms and conditions, please contact us at <a id="link" href="mailto:Elevate_Workforce_Solutions.com">Elevate_Workforce_Solutions.com</a>.</p>
+    </div>
+</body>
+</html>

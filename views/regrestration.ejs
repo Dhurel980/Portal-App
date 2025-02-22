@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register | MyApp</title>
+    <style>
+        /* General Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+    }
+
+    /* Body Styling */
+    body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background: #f8f9fa;
+    }
+
+    /* Login Container */
+    .login-container {
+        display: flex;
+        width: 60%;
+        max-width: 900px;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 5px 10px 20px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+
+    /* Left Section (Company Name & Welcome) */
+    .login-left {
+        width: 50%;
+        background: linear-gradient(135deg, #a8edea, #fed6e3);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        padding: 20px;
+    }
+
+        /* Users Button Container */
+        .users {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .users .btn {
+            width: 180px;
+            padding: 10px 20px;
+            background: #578FCA;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .users .btn:hover {
+            color: #578FCA;
+            background: #FFE2E2;
+        }
+    .login-left h1 {
+        font-size: 2rem;
+        color: #333;
+    }
+
+    .login-left p {
+        font-size: 1rem;
+        color: #555;
+        margin-top: 10px;
+    }
+
+    /* Right Section (Login Form) */
+    .login-right {
+        width: 50%;
+        padding: 25px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .login-right h2 {
+        font-size: 1.8rem;
+        margin-bottom: 20px;
+        color: #333;
+    }
+
+    /* Form Styling */
+    .form-group {
+        width: 100%;
+        margin-bottom: 15px;
+    }
+
+    .form-group label {
+        display: block;
+        font-size: 14px;
+        color: #555;
+        margin-bottom: 5px;
+    }
+
+    .form-group input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+    }
+
+    /* Button */
+    .btn {
+        width: 100%;
+        padding: 10px;
+        background: #578FCA;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    .btn:hover {
+        color: #578FCA;
+        background: #FFE2E2;
+    }
+
+    /* Registration Link */
+    .register-link {
+        margin-top: 10px;
+        font-size: 14px;
+    }
+
+    .register-link a {
+        color: #007bff;
+        text-decoration: none;
+    }
+
+    .register-link a:hover {
+        text-decoration: underline;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .login-container {
+            flex-direction: column;
+            width: 90%;
+        }
+
+        .login-left, .login-right {
+            width: 100%;
+        }
+    }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <!-- Left Section: Welcome Message -->
+        <div class="login-left">
+            <h1 style="color: #578FCA;">Elevate Workforce Solutions</h1>
+            <p>We are very happy that you choose our services to find your suitable job.</p>
+                <p>Register now and explore amazing opportunities.</p>
+                <div class="users">
+                    <button id="jobseekerBtn" class="btn">Register as Jobseeker</button>
+                    <button id="companyBtn" class="btn">Register as Company</button>
+                </div>
+        </div>
+        
+        <!-- Right Section: Registration Form -->
+        <div class="login-right">
+            <h2 style="color: #578FCA;">Register</h2>
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="fullName">Full Name</label>
+                    <input type="text" id="fullName" name="fullName" placeholder="Enter your full name" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                </div>
+                <div class="form-group">
+                    <label for="phone">Phone</label>
+                    <input type="tel" id="phone" name="phone" placeholder="Enter your phone number" required>
+                </div>
+                <div class="form-group">
+                    <label for="address">Address</label>
+                    <input type="text" id="address" name="address" placeholder="Enter your address" required>
+                </div>                
+                <button type="submit" class="btn">Register</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let selectedRole = null; // Store selected role type
+    
+        document.getElementById('registerForm').addEventListener('submit', async function (event) {
+            event.preventDefault();
+    
+            if (!selectedRole) {
+                alert('Please select whether you are a Jobseeker or a Company.');
+                return;
+            }
+    
+            const fullName = document.getElementById('fullName').value;
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+            const address = document.getElementById('address').value;
+            const password = document.getElementById('password').value;
+    
+            // Map role to correct API endpoint
+            const apiRoutes = {
+                'jobseeker': '/api/user/addjobseeker',
+                'company': '/api/user/addcompany'
+            };
+    
+            const apiUrl = apiRoutes[selectedRole];
+    
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ fullName, email, phone, address, password }),
+            });
+    
+            const data = await response.json();
+            if (response.ok) {
+                alert(`Registration successful for ${selectedRole}! Redirecting to login...`);
+                window.location.href = '/login'; 
+            } else {
+                alert(data.error || 'Registration failed. Please try again.');
+            }
+        });
+    
+        // Set role when clicking Jobseeker or Company button
+        document.getElementById('jobseekerBtn').addEventListener('click', function () {
+            selectedRole = 'jobseeker';
+            alert('You selected Jobseeker. Now fill out the form and register.');
+        });
+    
+        document.getElementById('companyBtn').addEventListener('click', function () {
+            selectedRole = 'company';
+            alert('You selected Company. Now fill out the form and register.');
+        });
+    </script>
+    
+    
+
+<!-- <script>
+    let selectedRole = null; // Store selected role type
+
+    document.getElementById('registerForm').addEventListener('submit', async function (event) {
+        event.preventDefault();
+
+        if (!selectedRole) {
+            alert('Please select whether you are a Jobseeker or Company');
+            return;
+        }
+
+        const fullName = document.getElementById('fullName').value;
+        const email = document.getElementById('email').value;
+        const phone = document.getElementById('phone').value;
+        const address = document.getElementById('address').value;
+        const password = document.getElementById('password').value;
+
+        // Map role to correct API endpoint
+        const apiRoutes = {
+            'jobseeker': '/api/user/addjobseeker',
+            'company': '/api/user/addcompany',
+        };
+
+        const apiUrl = apiRoutes[selectedRole];
+
+        const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ fullName, email, phone, address, password }),
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+            alert(`Registration successful for ${selectedRole}! Redirecting to login...`);
+            window.location.href = '/login'; 
+        } else {
+            alert(data.error || 'Registration failed. Please try again.');
+        }
+    });
+
+    // Set role when clicking Jobseeker, Company, or Admin button
+    document.querySelector('.users .btn:nth-child(3)').addEventListener('click', function () {
+        selectedRole = 'jobseeker';
+        alert('You selected Jobseeker. Now fill out the form and register.');
+    });
+
+    document.querySelector('.users .btn:nth-child(2)').addEventListener('click', function () {
+        selectedRole = 'company';
+        alert('You selected Company. Now fill out the form and register.');
+    });
+</script> -->
+
+
+
+        <!-- document.getElementById('registerForm').addEventListener('submit', async function (event) {
+            event.preventDefault();
+            
+            const fullName = document.getElementById('fullName').value;
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+            const address = document.getElementById('address').value;
+            const password = document.getElementById('password').value;
+
+            const response = await fetch('/api/user/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ fullName, email, phone, address, password }),
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+                alert('Registration successful! Redirecting to login...');
+                window.location.href = '/login'; 
+            } else {
+                alert(data.error || 'Registration failed. Please try again.');
+            }
+
+            // Jobseeker and Company Button Click Events
+        document.getElementById('jobseekerBtn').addEventListener('click', async function () {
+            const response = await fetch('/api/user/registerJobseeker', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+                alert('Jobseeker registration started!');
+            } else {
+                alert(data.error || 'Error registering as jobseeker.');
+            }
+        });
+
+        document.getElementById('companyBtn').addEventListener('click', async function () {
+            const response = await fetch('/api/user/registerCompany', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+                alert('Company registration started!');
+            } else {
+                alert(data.error || 'Error registering as company.');
+            }
+        });
+        });
+    </script> -->
+</body>
+</html>
+
+

@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Company Profile | Elevate Workforce Solutions</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            color: #555;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: linear-gradient(135deg, #a8edea, #fed6e3);
+            padding: 20px;
+            box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar h2 {
+            font-size: 22px;
+            margin-bottom: 10px;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar ul li {
+            padding: 15px;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: background 0.3s;
+        }
+
+        .sidebar ul li:hover, .sidebar ul li.active {
+            background: #e6e6e6;
+        }
+
+        .sidebar ul li a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* Main Content */
+        #content {
+            margin-left: 290px;
+            padding: 40px;
+            flex-grow: 1;
+            width: calc(100% - 260px);
+        }
+
+        .company-card, .create-company-form, .create-job-form {
+            background: #ffffff;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .verification-status {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-left: 10px;
+        }
+
+        .verified {
+            background-color: green;
+        }
+
+        .not-verified {
+            background-color: red;
+        }
+
+        /* Create Company and Edit Company Form Styles */
+        .create-company-form input, 
+        .create-company-form textarea,
+        .create-job-form input, 
+        .create-job-form textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            transition: border-color 0.3s;
+        }
+
+        .create-company-form input:focus, 
+        .create-job-form input:focus,
+        .create-company-form textarea:focus, 
+        .create-job-form textarea:focus {
+            border-color: #578FCA; /* Change border color on focus */
+            outline: none; /* Remove default outline */
+        }
+
+        .create-company-form button, 
+        .create-job-form button {
+            padding: 10px 15px;
+            background-color: #a8edea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            color: black;
+        }
+
+        .create-company-form button:hover, 
+        .create-job-form button:hover {
+            background-color: #fed6e3; /* Darker shade on hover */
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                text-align: center;
+            }
+
+            #content {
+                margin-left: 0;
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <h2>Elevate Workforce Solutions</h2>
+        <nav>
+            <ul>
+                <li class="<%= (page === 'company') ? 'active' : '' %>">
+                    <a href="/company">Home</a>
+                </li>
+                <li class="<%= (page === 'job') ? 'active' : '' %>">
+                    <a href="/companyJobs">Job</a>
+                </li>
+                <li class="<%= (page === 'companyjobApplications') ? 'active' : '' %>">
+                    <a href="/jobapplicationCompany">Job Applications</a>
+                </li>
+                <li class="<%= (page === 'contact') ? 'active' : '' %>">
+                    <a href="/contactCompany">Contact</a>
+                </li>
+                <li class="<%= (page === 'terms') ? 'active' : '' %>">
+                    <a href="/termsCompany">Terms & Conditions</a>
+                </li>
+                <li class="<%= (page === 'aboutme') ? 'active' : '' %>">
+                    <a href="/mePage">Me</a>
+                </li>
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <div id="content">
+        <h1>Company Profile</h1>
+        <% if (company) { %>
+            <div class="company-card">
+                <h3><%= company.companyName %></h3>
+                <p><strong>Registration Number:</strong> <%= company.registrationNumber %></p>
+                <p><strong>Description:</strong> <%= company.description || 'No description available.' %></p>
+                <p><strong>Website:</strong> <a href="<%= company.website %>" target="_blank"><%= company.website %></a></p>
+                <div>
+                    <strong>Verification Status:</strong>
+                    <span class="verification-status <%= company.isVerified ? 'verified' : 'not-verified' %>"></span>
+                </div>
+            </div>
+            <div class="create-company-form">
+                <h3>Edit Company</h3>
+                <input type="text" id="companyName" value="<%= company.companyName %>" placeholder="Company Name" required>
+                <input type="text" id="registrationNumber" value="<%= company.registrationNumber %>" placeholder="Registration Number" required>
+                <textarea id="description" placeholder="Description"><%= company.description %></textarea>
+                <input type="text" id="website" value="<%= company.website %>" placeholder="Website URL" required>
+                <input type="text" id="logoUrl" value="<%= company.logoUrl %>" placeholder="Logo URL" required>
+                <button onclick="updateCompany()">Update Company</button>
+            </div>
+        <% } else { %>
+            <p>No company data available.</p>
+            <div class="create-company-form">
+                <h3>Create Company</h3>
+                <input type="text" id="newCompanyName" placeholder="Company Name" required>
+                <input type="text" id="newRegistrationNumber" placeholder="Registration Number" required>
+                <textarea id="newDescription" placeholder="Description"></textarea>
+                <input type="text" id="newWebsite" placeholder="Website URL" required>
+                <input type="text" id="newLogoUrl" placeholder="Logo URL" required>
+                <button onclick="createCompany()">Create Company</button>
+            </div>
+        <% } %>
+
+        <div class="create-job-form">
+            <h3>Create Job</h3>
+            <input type="text" id="jobTitle" placeholder="Job Title" required>
+            <textarea id="jobDescription" placeholder="Job Description" required></textarea>
+            <input type="text" id="jobRequirements" placeholder="Job Requirements" required>
+            <input type="text" id="jobLocation" placeholder="Job Location" required>
+            <input type="text" id="salaryRange" placeholder="Salary Range" required>
+            <input type="text" id="jobType" placeholder="Job Type" required>
+            <input type="date" id="jobDeadline" placeholder="Deadline" required>
+            <select id="jobStatus">
+                <option value="Open">Open</option>
+                <option value="Closed">Closed</option>
+            </select>
+            <button onclick="createJob()">Create Job</button>
+        </div>
+    </div>
+
+    <script>
+        async function createCompany() {
+            const companyName = document.getElementById('newCompanyName').value;
+            const registrationNumber = document.getElementById('newRegistrationNumber').value;
+            const description = document.getElementById('newDescription').value;
+            const website = document.getElementById('newWebsite').value;
+            const logoUrl = document.getElementById('newLogoUrl').value;
+
+            try {
+                const response = await fetch('/api/company/createCompany', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        companyName,
+                        registrationNumber,
+                        description,
+                        website,
+                        logoUrl,
+                        isVerified: false // Set to false as per your requirement
+                    }),
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to create company');
+                }
+
+                // Optionally, refresh the page or fetch the company data again
+                window.location.reload(); // Reload the page to show the new company data
+            } catch (error) {
+                console.error('Error creating company:', error);
+            }
+        }
+
+        async function updateCompany() {
+            const companyName = document.getElementById('companyName').value;
+            const registrationNumber = document.getElementById('registrationNumber').value;
+            const description = document.getElementById('description').value;
+            const website = document.getElementById('website').value;
+            const logoUrl = document.getElementById('logoUrl').value;
+
+            try {
+                const response = await fetch('/api/company/updateCompany', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        companyName,
+                        registrationNumber,
+                        description,
+                        website,
+                        logoUrl,
+                    }),
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to update company');
+                }
+
+                // Optionally, refresh the page or fetch the company data again
+                window.location.reload(); // Reload the page to show the updated company data
+            } catch (error) {
+                console.error('Error updating company:', error);
+            }
+        }
+
+        async function createJob() {
+            const title = document.getElementById('jobTitle').value;
+            const description = document.getElementById('jobDescription').value;
+            const requirements = document.getElementById('jobRequirements').value;
+            const location = document.getElementById('jobLocation').value;
+            const salaryRange = document.getElementById('salaryRange').value;
+            const jobType = document.getElementById('jobType').value;
+            const deadline = document.getElementById('jobDeadline').value;
+            const status = document.getElementById('jobStatus').value;
+
+            try {
+                const response = await fetch('/api/job/createJob', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        title,
+                        description,
+                        requirements,
+                        location,
+                        salaryRange,
+                        jobType,
+                        deadline,
+                        status,
+                        companyId: req.user.companyId // Use the company ID from the user token
+                    }),
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to create job');
+                }
+
+                // Optionally, refresh the page or fetch the job data again
+                window.location.reload(); // Reload the page to show the new job data
+            } catch (error) {
+                console.error('Error creating job:', error);
+            }
+        }
+    </script>
+</body>
+</html>

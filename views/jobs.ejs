@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            color: #555;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: linear-gradient(135deg, #a8edea, #fed6e3);
+            padding: 20px;
+            box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar h2 {
+            font-size: 22px;
+            margin-bottom: 10px;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar ul li {
+            padding: 15px;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: background 0.3s;
+        }
+
+        .sidebar ul li:hover, .sidebar ul li.active {
+            background: #e6e6e6;
+        }
+
+        .sidebar ul li a {
+            text-decoration: none;
+            color: inherit; /* Inherit color from parent */
+        }
+
+        /* Main Content */
+        #content {
+            margin-left: 290px; /* Adjust for sidebar width */
+            padding: 30px;
+            flex-grow: 1;
+            width: calc(100% - 260px); /* Adjust for sidebar width */
+        }
+
+        .job-card {
+            background: #ffffff;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .apply-btn {
+            background: #a8edea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .apply-btn:hover {
+            background: #fed6e3;
+        }
+
+        /* Application Form Styles */
+        #applicationForm {
+            display: none; /* Hidden by default */
+            background: #ffffff;
+            padding: 20px;
+            margin-top: 20px; /* Space above the form */
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Input and Label Styles */
+        #applicationForm label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        #applicationForm input[type="url"],
+        #applicationForm textarea {
+            width: 100%; /* Full width */
+            padding: 10px; /* Padding inside the input */
+            margin-bottom: 15px; /* Space below the input */
+            border: 1px solid #ccc; /* Border color */
+            border-radius: 5px; /* Rounded corners */
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1); /* Inner shadow */
+            font-size: 16px; /* Font size */
+        }
+
+        #applicationForm input[type="url"]:focus,
+        #applicationForm textarea:focus {
+            border-color: #a8edea; /* Change border color on focus */
+            outline: none; /* Remove default outline */
+            box-shadow: 0 0 5px rgba(168, 237, 234, 0.5); /* Shadow on focus */
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                text-align: center;
+            }
+
+            #content {
+                margin-left: 0;
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <aside class="sidebar">
+            <h2>x</h2>
+            <nav>
+                <ul>
+                    <li class="<%= (page === 'jobs') ? 'active' : '' %>">
+                        <a href="/jobs">Home</a>
+                    </li>
+                    <li class="<%= (page === 'companies') ? 'active' : '' %>">
+                        <a href="/companies">Companies</a>
+                    </li>
+                    <li class="<%= (page === 'jobapplication') ? 'active' : '' %>">
+                        <a href="/jobapplication">Job Applications</a>
+                    </li>
+                    <li class="<%= (page === 'contact') ? 'active' : '' %>">
+                        <a href="/contact">Contact</a>
+                    </li>
+                    <li class="<%= (page === 'terms') ? 'active' : '' %>">
+                        <a href="/termsAndConditions">Terms & Conditions</a>
+                    </li>
+                    <li class="<%= (page === 'aboutme') ? 'active' : '' %>">
+                        <a href="/mePage">Me</a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+    </nav>
+
+    <!-- Main Content -->
+    <div id="content">
+        <!-- Jobs Section -->
+        <section id="jobs" class="section">
+            <h2>💼 Available Jobs</h2>
+            <div class="job-list">
+                <% jobs.forEach(job => { %>
+                    <div class="job-card">
+                        <h3><%= job.title %></h3>
+                        <p><strong>Description:</strong> <%= job.description %></p>
+                        <p><strong>Requirements:</strong> <%= job.requirements %></p>
+                        <p><strong>Location:</strong> <%= job.location %></p>
+                        <p><strong>Salary Range:</strong> <%= job.salaryRange %></p>
+                        <p><strong>Job Type:</strong> <%= job.jobType %></p>
+                        <p><strong>Deadline:</strong> <%= job.deadline %></p>
+                        <p><strong>Status:</strong> <%= job.status %></p>
+                        <button class="apply-btn" onclick="openApplicationForm('<%= job.id %>')">Apply Now</button>
+                    </div>
+                <% }); %>
+            </div>
+        </section>
+    </div>
+
+    <!-- Job Application Form (Hidden by Default) -->
+    <div id="applicationForm">
+        <h2>Apply for Job</h2>
+        <form id="jobApplicationForm">
+            <input type="hidden" id="jobId" name="jobId" value="">
+            <div>
+                <label for="resumeUrl">Resume URL:</label>
+                <input type="url" id="resumeUrl" name="resumeUrl" required>
+            </div>
+            <div>
+                <label for="coverLetter">Cover Letter:</label>
+                <textarea id="coverLetter" name="coverLetter" rows="5" required></textarea>
+            </div>
+            <button class="apply-btn" type="submit">Submit Application</button>
+            <button class="apply-btn" type="button" onclick="closeApplicationForm()">Cancel</button>
+        </form>
+    </div>
+
+    <script>
+        // Function to open the job application form
+        function openApplicationForm(jobId) {
+            document.getElementById('jobId').value = jobId; // Set job ID in hidden input
+            let form = document.getElementById('applicationForm');
+            form.style.display = 'block';
+
+            // Move form below the clicked job
+            let jobCard = event.target.closest('.job-card');
+            jobCard.insertAdjacentElement('afterend', form);
+        }
+
+        // Function to close the job application form
+        function closeApplicationForm() {
+            document.getElementById('applicationForm').style.display = 'none';
+        }
+
+        // Function to handle job application form submission
+        document.getElementById('jobApplicationForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const formData = {
+                resumeUrl: document.getElementById('resumeUrl').value,
+                coverLetter: document.getElementById('coverLetter').value,
+                jobId: document.getElementById('jobId').value, // Include job ID
+            };
+
+            try {
+                const response = await fetch('/api/jobApplication/addjobApplication', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (response.ok) {
+                    alert('Application submitted successfully!');
+                    closeApplicationForm();
+                } else {
+                    const errorData = await response.json();
+                    alert(`Error: ${errorData.message}`);
+                }
+            } catch (error) {
+                console.error('Error submitting application:', error);
+                alert('An error occurred while submitting the application.');
+            }
+        });
+    </script>
+</body>
+</html>

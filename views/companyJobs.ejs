@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Company Jobs | Elevate Workforce Solutions</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            color: #555;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: linear-gradient(135deg, #a8edea, #fed6e3);
+            padding: 20px;
+            box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar h2 {
+            font-size: 22px;
+            margin-bottom: 10px;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar ul li {
+            padding: 15px;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: background 0.3s;
+        }
+
+        .sidebar ul li:hover, .sidebar ul li.active {
+            background: #e6e6e6;
+        }
+
+        .sidebar ul li a {
+            text-decoration: none;
+            color: inherit; /* Inherit color from parent */
+        }
+
+        /* Main Content */
+        #content {
+            margin-left: 290px; /* Adjust for sidebar width */
+            padding: 40px;
+            flex-grow: 1;
+            width: calc(100% - 260px); /* Adjust for sidebar width */
+        }
+
+        .job-card {
+            background: #ffffff;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .job-status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 5px;
+            color: white;
+        }
+
+        .open {
+            background-color: green; /* Green for open */
+        }
+
+        .closed {
+            background-color: red; /* Red for closed */
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                text-align: center;
+            }
+
+            #content {
+                margin-left: 0;
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <aside class="sidebar">
+            <h2>Elevate Workforce Solutions</h2>
+            <nav>
+                <ul>
+                    <li class="<%= (page === 'company') ? 'active' : '' %>">
+                        <a href="/company">Home</a>
+                    </li>
+                    <li class="<%= (page === 'job') ? 'active' : '' %>">
+                        <a href="/companyJobs">Job</a>
+                    </li>
+                    <li class="<%= (page === 'companyjobApplications') ? 'active' : '' %>">
+                        <a href="/jobapplicationCompany">Job Applications</a>
+                    </li>
+                    <li class="<%= (page === 'contact') ? 'active' : '' %>">
+                        <a href="/contactCompany">Contact</a>
+                    </li>
+                    <li class="<%= (page === 'terms') ? 'active' : '' %>">
+                        <a href="/termsCompany">Terms & Conditions</a>
+                    </li>
+                    <li class="<%= (page === 'aboutme') ? 'active' : '' %>">
+                        <a href="/mePage">Me</a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+    </nav>
+
+    <!-- Main Content -->
+    <div id="content">
+        <h1>Company Jobs</h1>
+        <div id="jobsList"></div>
+    </div>
+
+    <script>
+        // Function to fetch jobs for the company
+        async function fetchCompanyJobs() {
+            try {
+                const response = await fetch('/api/job/getAlljob'); // Adjust the endpoint as necessary
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const jobs = await response.json();
+                displayJobs(jobs);
+            } catch (error) {
+                console.error('Error fetching jobs:', error);
+                document.getElementById('jobsList').innerHTML = '<p>Error fetching jobs</p>';
+            }
+        }
+    
+        // Function to display jobs
+        function displayJobs(jobs) {
+            const jobsList = document.getElementById('jobsList');
+            jobsList.innerHTML = '';
+    
+            if (jobs.length === 0) {
+                jobsList.innerHTML = '<p>No jobs found.</p>';
+                return;
+            }
+    
+            jobs.forEach(job => {
+                const jobCard = document.createElement('div');
+                jobCard.className = 'job-card';
+                jobCard.innerHTML = `
+                    <h3>${job.title}</h3>
+                    <p><strong>Description:</strong> ${job.description || 'No description available.'}</p>
+                    <p><strong>Location:</strong> ${job.location}</p>
+                    <p><strong>Salary Range:</strong> ${job.salaryRange}</p>
+                    <p><strong>Status:</strong> 
+                        <span class="job-status ${job.status === 'Open' ? 'open' : 'closed'}">${job.status}</span>
+                    </p>
+                    <button onclick="updateJobStatus(${job.id}, '${job.status === 'Open' ? 'Closed' : 'Open'}')">
+                        Mark as ${job.status === 'Open' ? 'Closed' : 'Open'}
+                    </button>
+                `;
+                jobsList.appendChild(jobCard);
+            });
+        }
+
+        // Function to update job status
+        async function updateJobStatus(jobId, newStatus) {
+        console.log("Updating job:", jobId, "New Status:", newStatus); // Debugging log
+
+    try {
+        const response = await fetch(`/api/job/updatejobStatus`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ jobId, status: newStatus }),  // Ensure "jobId" is sent
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to update job status');
+        }
+
+        console.log("Job status updated successfully");
+        fetchCompanyJobs(); // Refresh job list
+    } catch (error) {
+        console.log('Error updating job status:', error);
+    }
+}
+    
+        // Fetch jobs when the page loads
+        window.onload = fetchCompanyJobs;
+    </script>
+</body>
+</html>

@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | Elevate Workforce Solutions</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #a8edea, #fed6e3);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            color: #555;
+        }
+
+        #content {
+            padding: 40px;
+            flex-grow: 1;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 40px;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ccc;
+            text-align: left;
+        }
+        th {
+            background-color: #578FCA;
+            color: white;
+        }
+        .action-buttons button {
+            padding: 5px 10px;
+            margin-right: 5px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .edit {
+            background-color: orange;
+            color: white;
+        }
+        .edit:hover {
+            background-color: darkorange;
+        }
+        .delete {
+            background-color: red;
+            color: white;
+        }
+        .delete:hover {
+            background-color: darkred;
+        }
+        .verify {
+            background-color: green;
+            color: white;
+        }
+        .verify:hover {
+            background-color: darkgreen;
+        }
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                text-align: center;
+            }
+            #content {
+                margin-left: 0;
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="content">
+        <h1>Admin Dashboard</h1>
+
+        <!-- Users Table -->
+        <h2>Users</h2>
+        <table id="usersTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="usersList"></tbody>
+        </table>
+
+        <!-- Companies Table -->
+        <h2>Companies</h2>
+        <table id="companiesTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Company Name</th>
+                    <th>Registration Number</th>
+                    <th>Is Verified</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="companiesList"></tbody>
+        </table>
+
+        <!-- Contacts Table -->
+        <h2>Contact Messages</h2>
+        <table id="contactsTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Message</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="contactsList"></tbody>
+        </table>
+    </div>
+
+    <script>
+        async function fetchUsers() {
+            try {
+                const response = await fetch('/api/user/getusers');
+                if (!response.ok) throw new Error('Failed to fetch users');
+                const users = await response.json();
+                displayUsers(users);
+            } catch (error) {
+                console.error('Error fetching users:', error);
+            }
+        }
+
+        function displayUsers(users) {
+            const usersList = document.getElementById('usersList');
+            usersList.innerHTML = '';
+            users.forEach(user => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${user.id}</td>
+                    <td>${user.fullName}</td>
+                    <td>${user.email}</td>
+                    <td class="action-buttons">
+                        <button class="edit" onclick="editUser (${user.id})">Edit</button>
+                        <button class="delete" onclick="deleteUser (${user.id})">Delete</button>
+                    </td>
+                `;
+                usersList.appendChild(row);
+            });
+        }
+
+        async function fetchCompanies() {
+            try {
+                const response = await fetch('/api/company/getAllCompany');
+                if (!response.ok) throw new Error('Failed to fetch companies');
+                const companies = await response.json();
+                displayCompanies(companies);
+            } catch (error) {
+                console.error('Error fetching companies:', error);
+            }
+        }
+
+        function displayCompanies(companies) {
+            const companiesList = document.getElementById('companiesList');
+            companiesList.innerHTML = '';
+            companies.forEach(company => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${company.id}</td>
+                    <td>${company.companyName}</td>
+                    <td>${company.registrationNumber}</td>
+                    <td>
+                        <button class="verify" onclick="toggleVerification(${company.id}, ${company.isVerified})">
+                            ${company.isVerified ? 'Unverify' : 'Verify'}
+                        </button>
+                    </td>
+                    <td class="action-buttons">
+                        <button class="edit" onclick="editCompany(${company.id})">Edit</button>
+                        <button class="delete" onclick="deleteCompany(${company.id})">Delete</button>
+                    </td>
+                `;
+                companiesList.appendChild(row);
+            });
+        }
+
+        async function fetchContacts() {
+            try {
+                const response = await fetch('/api/contact/getAllContact');
+                if (!response.ok) throw new Error('Failed to fetch contacts');
+                const contacts = await response.json();
+                displayContacts(contacts);
+            } catch (error) {
+                console.error('Error fetching contacts:', error);
+            }
+        }
+
+        function displayContacts(contacts) {
+            const contactsList = document.getElementById('contactsList');
+            contactsList.innerHTML = '';
+            contacts.forEach(contact => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${contact.id}</td>
+                    <td>${contact.name}</td>
+                    <td>${contact.email}</td>
+                    <td>${contact.message}</td>
+                    <td class="action-buttons">
+                        <button class="delete" onclick="deleteContact(${contact.id})">Delete</button>
+                    </td>
+                `;
+                contactsList.appendChild(row);
+            });
+        }
+
+        async function toggleVerification(companyId, currentStatus) {
+            const newStatus = !currentStatus; // Toggle verification status
+            try {
+                const response = await fetch(`/api/company/updateVerification`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ companyId, isVerified: newStatus }),
+                });
+                if (!response.ok) throw new Error('Failed to update verification status');
+                fetchCompanies(); // Refresh the companies list
+            } catch (error) {
+                console.error('Error updating verification status:', error);
+            }
+        }
+
+        function editUser (userId) {
+            // Implement edit user functionality
+            alert(`Edit user with ID: ${userId}`);
+        }
+
+        function deleteUser (userId) {
+            // Implement delete user functionality
+            alert(`Delete user with ID: ${userId}`);
+        }
+
+        function editCompany(companyId) {
+            // Implement edit company functionality
+            alert(`Edit company with ID: ${companyId}`);
+        }
+
+        function deleteCompany(companyId) {
+            // Implement delete company functionality
+            alert(`Delete company with ID: ${companyId}`);
+        }
+
+        function deleteContact(contactId) {
+            // Implement delete contact functionality
+            alert(`Delete contact with ID: ${contactId}`);
+        }
+
+        // Fetch data when the page loads
+        window.onload = () => {
+            fetchUsers();
+            fetchCompanies();
+            fetchContacts();
+        };
+    </script>
+</body>
+</html>

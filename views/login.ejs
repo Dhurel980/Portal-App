@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | MyApp</title>
+    
+    <style>
+        /* General Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+    }
+
+    /* Body Styling */
+    body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background: #f8f9fa;
+    }
+
+    /* Login Container */
+    .login-container {
+        display: flex;
+        width: 60%;
+        max-width: 900px;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 5px 10px 20px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+
+    /* Left Section (Company Name & Welcome) */
+    .login-left {
+        width: 50%;
+        background: linear-gradient(135deg, #a8edea, #fed6e3);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        padding: 20px;
+    }
+
+    .login-left h1 {
+        font-size: 2rem;
+        color: #333;
+    }
+
+    .login-left p {
+        font-size: 1rem;
+        color: #555;
+        margin-top: 10px;
+    }
+
+    /* Right Section (Login Form) */
+    .login-right {
+        width: 50%;
+        padding: 40px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .login-right h2 {
+        font-size: 1.8rem;
+        margin-bottom: 20px;
+        color: #333;
+    }
+
+    /* Form Styling */
+    .form-group {
+        width: 100%;
+        margin-bottom: 15px;
+    }
+
+    .form-group label {
+        display: block;
+        font-size: 14px;
+        color: #555;
+        margin-bottom: 5px;
+    }
+
+    .form-group input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+    }
+
+    /* Button */
+    .btn {
+        width: 100%;
+        padding: 10px;
+        background: #578FCA;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    .btn:hover {
+        color: #578FCA;
+        background: #FFE2E2;
+    }
+
+    /* Registration Link */
+    .register-link {
+        margin-top: 10px;
+        font-size: 14px;
+    }
+
+    .register-link a {
+        color: #007bff;
+        text-decoration: none;
+    }
+
+    .register-link a:hover {
+        text-decoration: underline;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .login-container {
+            flex-direction: column;
+            width: 90%;
+        }
+
+        .login-left, .login-right {
+            width: 100%;
+        }
+    }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <!-- Left Section: Company Name & Welcome -->
+        <div class="login-left">
+            <h1 style="color: #578FCA;">Elevate Workforce Solutions</h1>
+            <p>Welcome 😊 <br> Login to continue.</p> <br>
+            <p class="register-link">Don't have an account? <a href="/register">Register here</a></p>
+        </div>
+
+        <!-- Right Section: Login Form -->
+        <div class="login-right">
+            <h2 style="color: #578FCA;">Login</h2>
+            <form action="/api/user/login" method="POST">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                </div>
+                <button type="submit" class="btn">Login</button>
+            </form>
+        </div>
+    </div>
+    <script>
+        document.querySelector('form').addEventListener('submit', async function (event) {
+    event.preventDefault();
+
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+
+    const response = await fetch('/api/user/login', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+    });
+
+    const data = await response.json();
+    if (response.ok) {
+        localStorage.setItem('token', data.token);
+        alert('Login successful');
+        window.location.href = '/userpage'; 
+    } else { 
+        alert(data.error || 'Login failed');
+    }
+});
+
+    </script>
+</body>
+</html>
