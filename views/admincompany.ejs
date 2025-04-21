@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Companies | Elevate Workforce Solutions</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #a8edea, #fed6e3);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            color: #555;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: linear-gradient(135deg, #a8edea, #fed6e3);
+            padding: 20px;
+            box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar h2 {
+            font-size: 22px;
+            margin-bottom: 10px;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar ul li {
+            padding: 15px;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: background 0.3s;
+        }
+
+        .sidebar ul li:hover, .sidebar ul li.active {
+            background: #e6e6e6;
+        }
+
+        .sidebar ul li a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* Main Content */
+        #content {
+            margin-left: 290px;
+            padding: 40px;
+            flex-grow: 1;
+            width: calc(100% - 260px);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        /* Table Styles */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 40px;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #ccc;
+            text-align: left;
+        }
+
+        th {
+            background-color: #578FCA;
+            color: white;
+        }
+
+        .action-buttons button {
+            padding: 5px 10px;
+            margin-right: 5px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .delete {
+            background-color: red;
+            color: white;
+        }
+
+        .delete:hover {
+            background-color: darkred;
+        }
+
+        .verify {
+            background-color: green;
+            color: white;
+        }
+
+        .verify:hover {
+            background-color: darkgreen;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                text-align: center;
+            }
+
+            #content {
+                margin-left: 0;
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <aside class="sidebar">
+            <h2>Elevate Workforce Solutions</h2>
+            <nav>
+                <ul>
+                    <li class="<%= (page === 'adminUsers') ? 'active' : '' %>">
+                        <a href="/admindashbord">Admin Users</a>
+                    </li>
+                    <li class="<%= (page === 'companies') ? 'active' : '' %>">
+                        <a href="/admincompany">Companies</a>
+                    </li>
+                    <li class="<%= (page === 'contacts') ? 'active' : '' %>">
+                        <a href="/adminContact">Contacts</a>
+                    </li>
+                    <li class="<%= (page === 'profile') ? 'active' : '' %>">
+                        <a href="/adminprofile">Me</a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+    </nav>
+
+    <!-- Main Content -->
+    <div id="content">
+        <h1>Companies</h1>
+
+        <!-- Companies Table -->
+        <table id="companiesTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Company Name</th>
+                    <th>Registration Number</th>
+                    <th>Is Verified</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="companiesList"></tbody>
+        </table>
+    </div>
+
+    <script>
+        async function fetchCompanies() {
+            try {
+                const response = await fetch('/api/company/getAllCompany');
+                if (!response.ok) throw new Error('Failed to fetch companies');
+                const companies = await response.json();
+                displayCompanies(companies);
+            } catch (error) {
+                console.error('Error fetching companies:', error);
+            }
+        }
+
+        function displayCompanies(companies) {
+            const companiesList = document.getElementById('companiesList');
+            companiesList.innerHTML = '';
+
+            companies.forEach(company => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${company.id}</td>
+                    <td>${company.companyName}</td>
+                    <td>${company.registrationNumber}</td>
+                    <td>
+                        <button class="verify" onclick="toggleVerification(${company.id}, ${company.isVerified}, this)">
+                            ${company.isVerified ? 'Unverify' : 'Verify'}
+                        </button>
+                    </td>
+                    <td class="action-buttons">
+                        <button class="delete" onclick="deleteCompany(${company.id})">Delete</button>
+                    </td>
+                `;
+                companiesList.appendChild(row);
+            });
+        }
+
+        async function toggleVerification(companyId, currentStatus, buttonElement) {
+            if (!companyId) {
+                console.error("Error: companyId is undefined.");
+                return;
+            }
+
+            console.log("Updating verification for Company ID:", companyId, "Current Status:", currentStatus);
+
+            const newStatus = !currentStatus; 
+            buttonElement.textContent = "Processing..."; 
+
+            try {
+                const response = await fetch(`/api/company/adminUpdateStatus`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 
+                        companyId, 
+                        isVerified: newStatus 
+                    }), 
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Failed to update verification status');
+                }
+
+                console.log("Verification status updated successfully");
+
+                buttonElement.textContent = newStatus ? 'Unverify' : 'Verify';
+                buttonElement.style.backgroundColor = newStatus ? "darkred" : "darkgreen"; 
+                buttonElement.onclick = () => toggleVerification(companyId, newStatus, buttonElement); 
+
+            } catch (error) {
+                console.error('Error updating verification:', error);
+                buttonElement.textContent = currentStatus ? "Unverify" : "Verify"; 
+            }
+        }
+
+        function deleteCompany(companyId) {
+            fetch(`/api/company/deleteById/${companyId}`, {
+                method: 'DELETE',
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to delete company');
+                fetchCompanies(); 
+            })
+            .catch(error => {
+                console.error('Error deleting company:', error);
+            });
+        }
+
+        window.onload = () => {
+            fetchCompanies();
+        };
+    </script>
+</body>
+</html>

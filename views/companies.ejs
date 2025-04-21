@@ -63,10 +63,21 @@
             width: calc(100% - 260px); /* Adjust for sidebar width */
         }
 
+        h1 {
+            text-align: center; /* Center the headline */
+            margin-bottom: 20px; /* Space below the headline */
+        }
+
+        /* Company List Styles */
+        .company-list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr); /* Two columns */
+            gap: 20px; /* Space between company cards */
+        }
+
         .company-card {
             background: #ffffff;
             padding: 20px;
-            margin-bottom: 20px;
             border-radius: 10px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
@@ -99,6 +110,10 @@
             #content {
                 margin-left: 0;
                 padding: 15px;
+            }
+
+            .company-list {
+                grid-template-columns: 1fr; /* One column on small screens */
             }
         }
     </style>
@@ -135,7 +150,7 @@
     <!-- Main Content -->
     <div id="content">
         <h1>Registered Companies</h1>
-        <div id="companiesList"></div>
+        <div class="company-list" id="companiesList"></div>
     </div>
 
     <script>
@@ -160,7 +175,7 @@
             companiesList.innerHTML = ''; // Clear previous content
     
             if (companies.length === 0) {
-                companiesList.innerHTML = '<p>No companies found.</p>';
+                companiesList.inner.HTML = '<p>No companies found.</p>';
                 return;
             }
     

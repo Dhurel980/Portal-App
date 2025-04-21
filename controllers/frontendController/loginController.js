@@ -128,6 +128,10 @@ const renderRegisterPage = async (req, res) => {
     res.render('regrestration');
 }
 
+const renderCompanyRegisterPage = async (req, res) => {
+    res.render('registerCompany');
+}
+
 const renderjobapplicationPage = async (req, res) => {
     try {
         // Fetch job applications for the logged-in user
@@ -136,6 +140,7 @@ const renderjobapplicationPage = async (req, res) => {
             include: [{ model: Job, as: 'Jobs', attributes: ['title'] }] // Use the correct alias here
         });
 
+        console.log(applications);
         // Render the job application page and pass the applications and page variable
         res.render('jobapplication', {
             title: 'Job Applications',
@@ -220,10 +225,15 @@ const renderContactPage = (req, res) => {
 
 const renderCompanyPage = async (req, res) => {
     try {
-        console.log(req.user.companyId)
+        // Check if the user is authenticated and has a companyId
+        if (!req.user || !req.user.companyId) {
+            return res.status(401).send('Unauthorized: User not logged in or company ID missing');
+        }
+
         const companyId = req.user.companyId; // Assuming the company ID is stored in the user token
         const company = await Company.findByPk(companyId); // Fetch company data by ID
 
+        // If no company is found, return a 404 error
         if (!company) {
             return res.status(404).send('Company not found');
         }
@@ -232,7 +242,9 @@ const renderCompanyPage = async (req, res) => {
         res.render('company', {
             title: 'Company Profile',
             page: 'company', // Set the active page
-            company: company.toJSON() // Pass the company data to the template
+            company: company.toJSON(), // Pass the company data to the template
+            userRole: req.user.role, // Pass the user role to the template
+            hasCompany: !!company // Pass whether the user has a company
         });
     } catch (error) {
         console.error('Error fetching company data:', error);
@@ -317,15 +329,82 @@ const renderJobApplicationsCompanyPage = async (req, res) => {
 const renderAdminDashboard = async (req, res) => {
     try {
         // Render the admin dashboard page
-        res.render('admindashboard', {
+        res.render('admindashbord', {
             title: 'Admin Dashboard',
-            page: 'admindashboard' // Set the active page
+            page: 'admindashbord' // Set the active page
         });
     } catch (error) {
         console.error('Error rendering admin dashboard:', error);
         res.status(500).send('Internal Server Error');
     }
 };
+
+const renderAdminCompany = async (req, res) => {
+    try {
+        // Render the admin dashboard page
+        res.render('adminCompany', {
+            title: 'Admin Dashboard',
+            page: 'adminCompany' // Set the active page
+        });
+    } catch (error) {
+        console.error('Error rendering admin company:', error);
+        res.status(500).send('Internal Server Error');
+    }
+};
+
+const renderAdminContact = async (req, res) => {
+    try {
+        // Render the admin dashboard page
+        res.render('adminContact', {
+            title: 'Admin Contact',
+            page: 'adminContact' // Set the active page
+        });
+    } catch (error) {
+        console.error('Error rendering admin Contact:', error);
+        res.status(500).send('Internal Server Error');
+    }
+};
+
+const rendermeCompanyPage = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const user = await User.findByPk(userId);
+
+        if (!user) {
+            return res.status(404).send('User  not found');
+        }
+
+        res.render('meCompany', {
+            title: 'My Profile',
+            user: user,
+            page: 'meCompany'
+        });
+    } catch (error) {
+        console.error('Error fetching user data:', error );
+        res.status(500).send('Internal Server Error');
+    }
+};
+
+const renderAdminProfilePage = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const user = await User.findByPk(userId);
+
+        if (!user) {
+            return res.status(404).send('User  not found');
+        }
+
+        res.render('adminprofile', {
+            title: 'My Profile',
+            user: user,
+            page: 'adminprofile'
+        });
+    } catch (error) {
+        console.error('Error fetching user data:', error );
+        res.status(500).send('Internal Server Error');
+    }
+};
+
 
 module.exports = {
     renderLoginPage,
@@ -343,5 +422,10 @@ module.exports = {
     renderContactCompanyPage,
     rendertermsCompanyPage,
     renderJobApplicationsCompanyPage,
-    renderAdminDashboard
+    renderAdminDashboard,
+    rendermeCompanyPage,
+    renderAdminCompany,
+    renderAdminProfilePage,
+    renderAdminContact,
+    renderCompanyRegisterPage
 };

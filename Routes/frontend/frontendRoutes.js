@@ -10,6 +10,7 @@ router.get('/login', loginController.renderLoginPage);
 router.get('/jobs', authMiddleware,loginController.userLoginPage);
 router.get('/register', loginController.renderRegisterPage);
 router.get('/createTodo', loginController.renderCreateTodoPage);
+router.get('/createCompany', loginController.renderCompanyRegisterPage);
 router.get('/userpage', authMiddleware,loginController.userLoginPage);
 
 router.get('/jobapplication', authMiddleware, loginController.renderjobapplicationPage);
@@ -23,5 +24,9 @@ router.get('/companyJobs', authMiddleware, loginController.renderCompanyJobsPage
 router.get('/contactCompany', authMiddleware, loginController.renderContactCompanyPage);
 router.get('/termsCompany', authMiddleware, loginController.rendertermsCompanyPage);
 router.get('/jobapplicationCompany', authMiddleware, loginController.renderJobApplicationsCompanyPage);
+router.get('/meCompany', authMiddleware, loginController.rendermeCompanyPage);
 router.get('/admindashbord', authMiddleware, loginController.renderAdminDashboard);
+router.get('/adminCompany', authMiddleware, loginController.renderAdminCompany);
+router.get('/adminprofile', authMiddleware, loginController.renderAdminProfilePage);
+router.get('/adminContact', authMiddleware, loginController.renderAdminContact);
 module.exports = router;

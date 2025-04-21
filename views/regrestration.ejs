@@ -238,13 +238,18 @@
     
             const data = await response.json();
             if (response.ok) {
-                alert(`Registration successful for ${selectedRole}! Redirecting to login...`);
-                window.location.href = '/login'; 
+                if (selectedRole === 'jobseeker') {
+                    alert('Registration successful for Jobseeker! Redirecting to login...');
+                    window.location.href = '/login'; 
+                } else if (selectedRole === 'company') {
+                    // Redirect to company registration page with userId
+                    const userId = data.id;
+                    window.location.href = `/createCompany?userId=${userId}`;
+                }
             } else {
                 alert(data.error || 'Registration failed. Please try again.');
             }
         });
-    
         // Set role when clicking Jobseeker or Company button
         document.getElementById('jobseekerBtn').addEventListener('click', function () {
             selectedRole = 'jobseeker';
@@ -255,122 +260,7 @@
             selectedRole = 'company';
             alert('You selected Company. Now fill out the form and register.');
         });
+    
     </script>
-    
-    
-
-<!-- <script>
-    let selectedRole = null; // Store selected role type
-
-    document.getElementById('registerForm').addEventListener('submit', async function (event) {
-        event.preventDefault();
-
-        if (!selectedRole) {
-            alert('Please select whether you are a Jobseeker or Company');
-            return;
-        }
-
-        const fullName = document.getElementById('fullName').value;
-        const email = document.getElementById('email').value;
-        const phone = document.getElementById('phone').value;
-        const address = document.getElementById('address').value;
-        const password = document.getElementById('password').value;
-
-        // Map role to correct API endpoint
-        const apiRoutes = {
-            'jobseeker': '/api/user/addjobseeker',
-            'company': '/api/user/addcompany',
-        };
-
-        const apiUrl = apiRoutes[selectedRole];
-
-        const response = await fetch(apiUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ fullName, email, phone, address, password }),
-        });
-
-        const data = await response.json();
-        if (response.ok) {
-            alert(`Registration successful for ${selectedRole}! Redirecting to login...`);
-            window.location.href = '/login'; 
-        } else {
-            alert(data.error || 'Registration failed. Please try again.');
-        }
-    });
-
-    // Set role when clicking Jobseeker, Company, or Admin button
-    document.querySelector('.users .btn:nth-child(3)').addEventListener('click', function () {
-        selectedRole = 'jobseeker';
-        alert('You selected Jobseeker. Now fill out the form and register.');
-    });
-
-    document.querySelector('.users .btn:nth-child(2)').addEventListener('click', function () {
-        selectedRole = 'company';
-        alert('You selected Company. Now fill out the form and register.');
-    });
-</script> -->
-
-
-
-        <!-- document.getElementById('registerForm').addEventListener('submit', async function (event) {
-            event.preventDefault();
-            
-            const fullName = document.getElementById('fullName').value;
-            const email = document.getElementById('email').value;
-            const phone = document.getElementById('phone').value;
-            const address = document.getElementById('address').value;
-            const password = document.getElementById('password').value;
-
-            const response = await fetch('/api/user/register', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ fullName, email, phone, address, password }),
-            });
-
-            const data = await response.json();
-            if (response.ok) {
-                alert('Registration successful! Redirecting to login...');
-                window.location.href = '/login'; 
-            } else {
-                alert(data.error || 'Registration failed. Please try again.');
-            }
-
-            // Jobseeker and Company Button Click Events
-        document.getElementById('jobseekerBtn').addEventListener('click', async function () {
-            const response = await fetch('/api/user/registerJobseeker', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' }
-            });
-
-            const data = await response.json();
-            if (response.ok) {
-                alert('Jobseeker registration started!');
-            } else {
-                alert(data.error || 'Error registering as jobseeker.');
-            }
-        });
-
-        document.getElementById('companyBtn').addEventListener('click', async function () {
-            const response = await fetch('/api/user/registerCompany', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' }
-            });
-
-            const data = await response.json();
-            if (response.ok) {
-                alert('Company registration started!');
-            } else {
-                alert(data.error || 'Error registering as company.');
-            }
-        });
-        });
-    </script> -->
 </body>
 </html>
-
-

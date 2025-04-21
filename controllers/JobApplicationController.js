@@ -1,17 +1,16 @@
 const JobApplication = require('../models/job_application');
 const User = require('../models/user');
 const Role = require('../models/role');
+const Job = require('../models/jobs');
 
 const createJobApplication  = async(req, res) => {
     const data = req.body;
-    const jobId = req.query.id;
-    console.log(jobId)
     try {
         const jobApplication  = await JobApplication.create({
             resumeUrl: data.resumeUrl,                   
             coverLetter: data.coverLetter,       
             status: data.status,
-            jobId: jobId,
+            jobId: data.jobId,
             userId: req.user.id
         });
         res.status(201).json(jobApplication);
@@ -35,45 +34,70 @@ const getJobApplicationById = async(req, res) => {
     }
 }
 
-// const getAllJobApplication = async(req, res) => {
-//     try {
-//         const jobApplication = await JobApplication.findAll();
-//         res.status(201).json(jobApplication);
-//     }
-//     catch (error) {
-//         res.status(404).json({ message: `An error has occured ${ error.message}`});
-//     }
-// }
-
-const getAllJobApplication = async (req, res) => {
-    const {id} = req.use.id;
+const getAllUserJobApplications = async (req, res) => {
     try {
-        const user = await User.findOne({
-            where: { id },
-            include: [{ model: Role, as: "Role", attributes: ["name"] }],
-        });
+        const userId = req.user.id; 
 
-        if (!user) {
-            res.status(404).json({ message: `User not found`});
+        if (!userId) {
+            return res.status(403).json({ message: "Unauthorized access! User ID not found." });
         }
-        const roleName = user.Role.name;
-        console.log(user.Role.name);
-        if (roleName === "admin") {
-            const jobApplication = await JobApplication.findAll();
-            return res.status(200).json(jobApplication);
-        }
-        else if (roleName === "jobseeker" || "company") {
-            const jobApplication = await JobApplication.findAll({ where: {userId: id}})
-            return res.status(200).json(jobApplication);
-        }
-        else {
-            return res.status(404).json({ message:`Unauthorized role !`});
-        }
+
+        // Fetch job applications where the user is the applicant
+        const jobApplications = await JobApplication.findAll({
+            where: { userId: userId }, // Ensure applications belong to the user
+            include: [
+                {
+                    model: Job,
+                    as: "Jobs", // Ensure the alias matches your model definition
+                    attributes: ["title"], // Fetch job details
+                },
+                {
+                    model: User,
+                    as: "Users", // Ensure the alias matches your model definition
+                    attributes: ["fullName", "email"], // Fetch user details
+                }
+            ],
+            attributes: ["id", "resumeUrl", "coverLetter", "status"], // Include relevant application fields
+        });
+        return res.status(200).json(jobApplications);
     } catch (error) {
-        console.log(error)
-        return res.status(500).json({ message:`An error occurred while processing the request`});
+        console.error("Error fetching user job applications:", error);
+        return res.status(500).json({ message: "An error occurred while fetching job applications." });
     }
-}
+};
+
+const getAllCompanyJobApplication = async (req, res) => {
+    try {
+        const companyId = req.user.companyId;
+
+        if (!companyId) {
+            return res.status(403).json({ message: "Unauthorized access! Company ID not found." });
+        }
+
+        // Fetch job applications where jobs belong to the company
+        const jobApplications = await JobApplication.findAll({
+            include: [
+                {
+                    model: Job,
+                    as: "Jobs",
+                    where: { companyId: companyId }, // Ensure jobs belong to the company
+                    attributes: ["title", "description"], // Fetch job details
+                },
+                {
+                    model: User,
+                    as: "Users",
+                    attributes: ["fullName", "email"], // Fetch user details
+                }
+            ],
+            attributes: ["id", "resumeUrl", "coverLetter", "status", "createdAt"],
+        });
+        return res.status(200).json(jobApplications);
+       
+    } catch (error) {
+        console.error("Error fetching job applications:", error);
+        return res.status(500).json({ message: "An error occurred while fetching job applications." });
+    }
+};
 
 const updateJobApplicationById = async (req, res) => {
     const id = req.params.id;
@@ -116,7 +140,8 @@ const deleteJobApplicationById = async (req, res) => {
 
 const updateJobApplicationStatus = async (req, res) => {
     try {
-        const { jobId, userId, status } = req.body;
+        const { applicationId, status } = req.body;
+        console.log(applicationId, status);
 
         // Ensure the status is valid
         const validStatuses = ['pending', 'accepted', 'rejected'];
@@ -124,8 +149,8 @@ const updateJobApplicationStatus = async (req, res) => {
             return res.status(400).json({ message: "Invalid status value" });
         }
 
-        // Find the job application
-        const jobApplication = await JobApplication.findOne({ where: { jobId, userId } });
+        // Find the job application by its ID
+        const jobApplication = await JobApplication.findOne({ where: { id: applicationId } });
 
         if (!jobApplication) {
             return res.status(404).json({ message: "Job application not found" });
@@ -134,7 +159,10 @@ const updateJobApplicationStatus = async (req, res) => {
         // Update the status
         await jobApplication.update({ status });
 
-        return res.status(200).json({ message: "Job application status updated successfully", jobApplication });
+        return res.status(200).json({ 
+            message: "Job application status updated successfully", 
+            jobApplication 
+        });
     } catch (error) {
         console.error("Error updating job application status:", error);
         return res.status(500).json({ message: "An error occurred", error: error.message });
@@ -146,7 +174,8 @@ const updateJobApplicationStatus = async (req, res) => {
 module.exports = {
     createJobApplication,
     getJobApplicationById,
-    getAllJobApplication ,
+    getAllUserJobApplications,
+    getAllCompanyJobApplication,
     updateJobApplicationById,
     deleteJobApplicationById,
     updateJobApplicationStatus

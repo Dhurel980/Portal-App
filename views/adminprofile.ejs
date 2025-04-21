@@ -130,23 +130,17 @@
             <h2>Elevate Workforce Solutions</h2>
             <nav>
                 <ul>
-                    <li class="<%= (page === 'jobs') ? 'active' : '' %>">
-                        <a href="/jobs">Home</a>
+                    <li class="<%= (page === 'adminUsers') ? 'active' : '' %>">
+                        <a href="/admindashbord">Admin Users</a>
                     </li>
                     <li class="<%= (page === 'companies') ? 'active' : '' %>">
-                        <a href="/companies">Companies</a>
+                        <a href="/admincompany">Companies</a>
                     </li>
-                    <li class="<%= (page === 'jobapplication') ? 'active' : '' %>">
-                        <a href="/job application">Job Applications</a>
+                    <li class="<%= (page === 'contacts') ? 'active' : '' %>">
+                        <a href="/adminContact">Contacts</a>
                     </li>
-                    <li class="<%= (page === 'contact') ? 'active' : '' %>">
-                        <a href="/contact">Contact</a>
-                    </li>
-                    <li class="<%= (page === 'terms') ? 'active' : '' %>">
-                        <a href="/termsAndConditions">Terms & Conditions</a>
-                    </li>
-                    <li class="<%= (page === 'aboutme') ? 'active' : '' %>">
-                        <a href="/mePage">Me</a>
+                    <li class="<%= (page === 'profile') ? 'active' : '' %>">
+                        <a href="/adminprofile">Me</a>
                     </li>
                 </ul>
             </nav>
@@ -157,7 +151,7 @@
     <div id="content">
         <h1>My Profile</h1>
         <section class="user-info">
-            <h2>User Information</h2>
+            <h2>Admin Information</h2>
             <p><strong>Name:</strong> <%= user.fullName %></p>
             <p><strong>Email:</strong> <%= user.email %></p>
             <p><strong>Phone:</strong> <%= user.phone || 'N/A' %></p>

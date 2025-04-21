@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contacts | Elevate Workforce Solutions</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #a8edea, #fed6e3);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            color: #555;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: linear-gradient(135deg, #a8edea, #fed6e3);
+            padding: 20px;
+            box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar h2 {
+            font-size: 22px;
+            margin-bottom: 10px;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar ul li {
+            padding: 15px;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: background 0.3s;
+        }
+
+        .sidebar ul li:hover, .sidebar ul li.active {
+            background: #e6e6e6;
+        }
+
+        .sidebar ul li a {
+            text-decoration: none;
+            color: inherit; /* Inherit color from parent */
+        }
+
+        /* Main Content */
+        #content {
+            margin-left: 290px; /* Adjust for sidebar width */
+            padding: 40px;
+            flex-grow: 1;
+            width: calc(100% - 260px); /* Adjust for sidebar width */
+        }
+
+        h1 {
+            text-align: center; /* Center the headline */
+            margin-bottom: 20px; /* Space below the headline */
+        }
+
+        /* Table Styles */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 40px;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #ccc;
+            text-align: left;
+        }
+
+        th {
+            background-color: #578FCA;
+            color: white;
+        }
+
+        .action-buttons button {
+            padding: 5px 10px;
+            margin-right: 5px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .delete {
+            background-color: red;
+            color: white;
+        }
+
+        .delete:hover {
+            background-color: darkred;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                text-align: center;
+            }
+
+            #content {
+                margin-left: 0;
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <aside class="sidebar">
+            <h2>Elevate Workforce Solutions</h2>
+            <nav>
+                <ul>
+                    <li class="<%= (page === 'adminUsers') ? 'active' : '' %>">
+                        <a href="/admindashbord">Admin Users</a>
+                    </li>
+                    <li class="<%= (page === 'companies') ? 'active' : '' %>">
+                        <a href="/admincompany">Companies</a>
+                    </li>
+                    <li class="<%= (page === 'contacts') ? 'active' : '' %>">
+                        <a href="/adminContact">Contacts</a>
+                    </li>
+                    <li class="<%= (page === 'profile') ? 'active' : '' %>">
+                        <a href="/adminprofile">Me</a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+    </nav>
+
+    <!-- Main Content -->
+    <div id="content">
+        <h1>Contact Messages</h1>
+
+        <!-- Contacts Table -->
+        <table id="contactsTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Message</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="contactsList"></tbody>
+        </table>
+    </div>
+
+    <script>
+        async function fetchContacts() {
+            try {
+                const response = await fetch('/api/contact/getAllContact');
+                if (!response.ok) throw new Error('Failed to fetch contacts');
+                const contacts = await response.json();
+                displayContacts(contacts);
+            } catch (error) {
+                console.error('Error fetching contacts:', error);
+            }
+        }
+
+        function displayContacts(contacts) {
+            const contactsList = document.getElementById('contactsList');
+            contactsList.innerHTML = '';
+            contacts.forEach(contact => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${contact.id}</td>
+                    <td>${contact.name}</td>
+                    <td>${contact.email}</td>
+                    <td>${contact.message}</td>
+                    <td class="action-buttons">
+                        <button class="delete" onclick="deleteContact(${contact.id})">Delete</button>
+                    </td>
+                `;
+                contactsList.appendChild(row);
+            });
+        }
+
+        function deleteContact(contactId) {
+            // Implement delete contact functionality
+            alert(`Delete contact with ID: ${contactId}`);
+        }
+
+        // Fetch data when the page loads
+        window.onload = () => {
+            fetchContacts();
+        };
+    </script>
+</body>
+</html>
