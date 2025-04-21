@@ -139,7 +139,7 @@
         // Function to fetch job applications
         async function fetchJobApplications() {
             try {
-                const response = await fetch('/api/jobApplication/getjobapplication');
+                const response = await fetch('/api/jobApplication/getUserJobapplication');
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }

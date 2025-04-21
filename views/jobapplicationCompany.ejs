@@ -32,12 +32,17 @@
             padding: 15px;
             cursor: pointer;
             border-radius: 10px;
+            transition: background 0.3s;
         }
         .sidebar ul li:hover, .sidebar ul li.active {
             background: #e6e6e6;
         }
+        .sidebar ul li a {
+            text-decoration: none;
+            color: inherit; /* Inherit color from parent */
+        }
         #content {
-            margin-left: 290px;
+            margin-left: 290px; /* Adjust for sidebar width */
             padding: 40px;
             flex-grow: 1;
         }
@@ -119,7 +124,7 @@
                     <a href="/termsCompany">Terms & Conditions</a>
                 </li>
                 <li class="<%= (page === 'aboutme') ? 'active' : '' %>">
-                    <a href="/mePage">Me</a>
+                    <a href="/meCompany">Me</a>
                 </li>
             </ul>
         </nav>
@@ -133,7 +138,7 @@
     <script>
         async function fetchJobApplications() {
             try {
-                const response = await fetch('/api/job/getAllApplications'); // Adjust the endpoint as necessary
+                const response = await fetch('/api/jobApplication/getCompanyJobapplication'); // Adjust the endpoint as necessary
                 if (!response.ok) throw new Error('Failed to fetch applications');
                 const applications = await response.json();
                 displayApplications(applications);
@@ -144,65 +149,83 @@
         }
 
         function displayApplications(applications) {
-            const applicationsList = document.getElementById('applicationsList');
-            applicationsList.innerHTML = '';
+        const applicationsList = document.getElementById('applicationsList');
+        applicationsList.innerHTML = '';
 
-            if (applications.length === 0) {
-                applicationsList.innerHTML = '<p>No applications found.</p>';
-                return;
-            }
-
-            // Group applications by jobId
-            const groupedApplications = applications.reduce((acc, app) => {
-                if (!acc[app.jobId]) {
-                    acc[app.jobId] = [];
-                }
-                acc[app.jobId].push(app);
-                return acc;
-            }, {});
-
-            // Display each job and its applications
-            for (const jobId in groupedApplications) {
-                const jobApplications = groupedApplications[jobId];
-                const jobCard = document.createElement('div');
-                jobCard.className = 'job-card';
-                jobCard.innerHTML = `<h3>Job ID: ${jobId}</h3>`;
-                
-                jobApplications.forEach(app => {
-                    const appCard = document.createElement('div');
-                    appCard.className = 'application-card';
-                    appCard.innerHTML = `
-                        <p><strong>User ID:</strong> ${app.userId}</p>
-                        <p><strong>Resume:</strong> <a href="${app.resumeUrl}" target="_blank">View Resume</a></p>
-                        <p><strong>Cover Letter:</strong> ${app.coverLetter || 'No cover letter provided.'}</p>
-                        <p><strong>Status:</strong> ${app.status}</p>
-                        <div class="action-buttons">
-                            <button class="accept" onclick="updateApplicationStatus(${app.id}, 'accepted')">Accept</button>
-                            <button class="reject" onclick="updateApplicationStatus(${app.id}, 'rejected')">Reject</button>
-                        </div>
-                    `;
-                    jobCard.appendChild(appCard);
-                });
-
-                applicationsList.appendChild(jobCard);
-            }
+        if (applications.length === 0) {
+            applicationsList.innerHTML = '<p>No applications found.</p>';
+            return;
         }
+
+        // Group applications by jobId
+        const groupedApplications = applications.reduce((acc, app) => {
+            if (!acc[app.jobId]) {
+                acc[app.jobId] = [];
+            }
+            acc[app.jobId].push(app);
+            return acc;
+        }, {});
+
+        // Display each job and its applications
+        for (const jobId in groupedApplications) {
+            const jobApplications = groupedApplications[jobId];
+            const jobCard = document.createElement('div');
+            jobCard.className = 'job-card';
+            jobCard.innerHTML = `<h3>Job ID: ${jobId}</h3>`;
+
+            jobApplications.forEach(app => {
+                console.log("Application ID:", app.id); // Debugging line
+
+                if (!app.id) {
+                    console.error("Error: app.id is undefined for an application!");
+                    return;
+                }
+
+                const appCard = document.createElement('div');
+                appCard.className = 'application-card';
+                appCard.innerHTML = `
+                    <p><strong>User ID:</strong> ${app.userId}</p>
+                    <p><strong>Resume:</strong> <a href="${app.resume}" target="_blank">View Resume</a></p>
+                    <p><strong>Cover Letter:</strong> ${app.coverLetter || 'No cover letter provided.'}</p>
+                    <p><strong>Status:</strong> ${app.status || 'Pending'}</p>
+                    <div class="action-buttons">
+                        <button class="accept" onclick="updateApplicationStatus('${app.id}', 'accepted')">Accept</button>
+                        <button class="reject" onclick="updateApplicationStatus('${app.id}', 'rejected')">Reject</button>
+                    </div>
+                `;
+                jobCard.appendChild(appCard);
+            });
+
+            applicationsList.appendChild(jobCard);
+        }
+    }
+
 
         async function updateApplicationStatus(appId, newStatus) {
-            try {
-                const response = await fetch('/api/job/updatestatus', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ jobId: appId, status: newStatus })
-                });
-                if (!response.ok) throw new Error('Failed to update status');
-                fetchJobApplications(); // Refresh list
-            } catch (error) {
-                console.error('Error updating status:', error);
-            }
+        console.log("Updating application:", appId, newStatus); // Debugging line
+
+        if (!appId) {
+            console.error("Error: appId is undefined or null!");
+            return;
         }
 
-        window.onload = fetchJobApplications;
+        try {
+            const response = await fetch('/api/jobApplication/updateStatus', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ applicationId: appId, status: newStatus })
+            });
+
+            if (!response.ok) throw new Error('Failed to update status');
+
+            console.log("Status updated successfully! Refreshing applications...");
+            fetchJobApplications(); // Refresh list after update
+        } catch (error) {
+            console.error('Error updating status:', error);
+        }
+    }
+
+    window.onload = fetchJobApplications;
     </script>
 </body>
 </html>

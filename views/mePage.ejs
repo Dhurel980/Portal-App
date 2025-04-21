@@ -58,9 +58,54 @@
         /* Main Content */
         #content {
             margin-left: 290px; /* Adjust for sidebar width */
-            padding: 30px;
+            padding: 40px;
             flex-grow: 1;
             width: calc(100% - 260px); /* Adjust for sidebar width */
+        }
+
+        h1 {
+            text-align: center; /* Center the headline */
+            margin-bottom: 20px; /* Space below the headline */
+            font-size: 28px; /* Larger font size for the main title */
+            color: #333;
+        }
+
+        /* User Information Section */
+        .user-info {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin: 0 auto; /* Center the section */
+            max-width: 600px; /* Limit the width */
+        }
+
+        h2 {
+            font-size: 24px; /* Larger font size for section title */
+            margin-bottom: 15px; /* Space below the section title */
+            color: #333;
+        }
+
+        p {
+            line-height: 1.6;
+            font-size: 18px; /* Larger font size for paragraph text */
+            margin: 10px 0; /* Space above and below paragraphs */
+        }
+
+        .logout-button {
+            background-color: #ff4d4d;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            display: block; /* Center the button */
+            margin: 20px auto; /* Center the button with margin */
+        }
+
+        .logout-button:hover {
+            background-color: #ff1a1a;
         }
 
         /* Responsive */
@@ -77,28 +122,6 @@
                 padding: 15px;
             }
         }
-
-        h1, h2 {
-            color: #333;
-        }
-
-        p {
-            line-height: 1.6;
-        }
-
-        .logout-button {
-            background-color: #ff4d4d;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-
-        .logout-button:hover {
-            background-color: #ff1a1a;
-        }
     </style>
 </head>
 <body>
@@ -114,7 +137,7 @@
                         <a href="/companies">Companies</a>
                     </li>
                     <li class="<%= (page === 'jobapplication') ? 'active' : '' %>">
-                        <a href="/jobapplication">Job Applications</a>
+                        <a href="/job application">Job Applications</a>
                     </li>
                     <li class="<%= (page === 'contact') ? 'active' : '' %>">
                         <a href="/contact">Contact</a>
@@ -133,12 +156,14 @@
     <!-- Main Content -->
     <div id="content">
         <h1>My Profile</h1>
-        <h2>User Information</h2>
-        <p><strong>Name:</strong> <%= user.fullName%></p>
-        <p><strong>Email:</strong> <%= user.email %></p>
-        <p><strong>Phone:</strong> <%= user.phone || 'N/A' %></p>
-        <p><strong>Location:</strong> <%= user.address || 'N/A' %></p>
-        <button class="logout-button" onclick="logout()">Logout</button>
+        <section class="user-info">
+            <h2>User Information</h2>
+            <p><strong>Name:</strong> <%= user.fullName %></p>
+            <p><strong>Email:</strong> <%= user.email %></p>
+            <p><strong>Phone:</strong> <%= user.phone || 'N/A' %></p>
+            <p><strong>Location:</strong> <%= user.address || 'N/A' %></p>
+            <button class="logout-button" onclick="logout()">Logout</button>
+        </section>
     </div>
 
     <script>

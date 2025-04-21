@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard | Elevate Workforce Solutions</title>
+    <title>Admin Users | Elevate Workforce Solutions</title>
     <style>
+        /* General Styles */
         body {
             font-family: 'Arial', sans-serif;
             background: linear-gradient(135deg, #a8edea, #fed6e3);
@@ -14,24 +15,77 @@
             color: #555;
         }
 
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: linear-gradient(135deg, #a8edea, #fed6e3);
+            padding: 20px;
+            box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar h2 {
+            font-size: 22px;
+            margin-bottom: 10px;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar ul li {
+            padding: 15px;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: background 0.3s;
+        }
+
+        .sidebar ul li:hover, .sidebar ul li.active {
+            background: #e6e6e6;
+        }
+
+        .sidebar ul li a {
+            text-decoration: none;
+            color: inherit; /* Inherit color from parent */
+        }
+
+        /* Main Content */
         #content {
+            margin-left: 290px; /* Adjust for sidebar width */
             padding: 40px;
             flex-grow: 1;
+            width: calc(100% - 260px); /* Adjust for sidebar width */
         }
+
+        h1 {
+            text-align: center; /* Center the headline */
+            margin-bottom: 20px; /* Space below the headline */
+        }
+
+        /* Table Styles */
         table {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 40px;
         }
+
         th, td {
             padding: 10px;
             border: 1px solid #ccc;
             text-align: left;
         }
+
         th {
             background-color: #578FCA;
             color: white;
         }
+
         .action-buttons button {
             padding: 5px 10px;
             margin-right: 5px;
@@ -40,27 +94,87 @@
             cursor: pointer;
             transition: background-color 0.3s;
         }
+
         .edit {
             background-color: orange;
             color: white;
         }
+
         .edit:hover {
             background-color: darkorange;
         }
+
         .delete {
             background-color: red;
             color: white;
         }
+
         .delete:hover {
             background-color: darkred;
         }
-        .verify {
-            background-color: green;
+
+        .add-admin {
+            background-color: #4CAF50; /* Green */
             color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 20px;
         }
-        .verify:hover {
-            background-color: darkgreen;
+
+        .add-admin:hover {
+            background-color: #45a049; /* Darker green */
         }
+
+        /* Add Admin Section */
+        .add-admin-section {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+
+        .add-admin-section h2 {
+            margin-bottom: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            flex: 1; /* Take up space for the label */
+            margin-right: 10px; /* Space between label and input */
+            font-weight: bold;
+        }
+
+        .form-group input {
+            flex: 2; /* Take up more space for the input */
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .add-admin-btn {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background 0.3s ease-in-out;
+        }
+
+        .add-admin-btn:hover {
+            background-color: #0056b3;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .sidebar {
@@ -69,6 +183,7 @@
                 position: relative;
                 text-align: center;
             }
+
             #content {
                 margin-left: 0;
                 padding: 15px;
@@ -77,194 +192,214 @@
     </style>
 </head>
 <body>
+    <nav>
+        <aside class="sidebar">
+            <h2>Elevate Workforce Solutions</h2>
+            <nav>
+                <ul>
+                    <li class="<%= (page === 'adminUsers') ? 'active' : '' %>">
+                        <a href="/admindashbord">Admin Users</a>
+                    </li>
+                    <li class="<%= (page === 'companies') ? 'active' : '' %>">
+                        <a href="/admincompany">Companies</a>
+                    </li>
+                    <li class="<%= (page === 'contacts') ? 'active' : '' %>">
+                        <a href="/adminContact">Contacts</a>
+                    </li>
+                    <li class="<%= (page === 'profile') ? 'active' : '' %>">
+                        <a href="/adminprofile">Me</a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+    </nav>
+
+    <!-- Main Content -->
     <div id="content">
-        <h1>Admin Dashboard</h1>
+        <h1>Admin Users</h1>
+        <button class="add-admin" onclick="showAddAdminForm()">Add Admin</button>
+        
+        <!-- Add Admin Form -->
+        <div id="addAdminForm" class="add-admin-section" style="display:none;">
+            <h2>Add New Admin</h2>
+            <div class="form-group">
+                <label for="adminName">Admin Name:</label>
+                <input type="text" id="adminName" required>
+            </div>
+            <div class="form-group">
+                <label for="adminEmail">Admin Email:</label>
+                <input type="email" id="adminEmail" required>
+            </div>
+            <div class="form-group">
+                <label for="adminPassword">Admin Password:</label>
+                <input type="password" id="adminPassword" required>
+            </div>
+            <div class="form-group">
+                <label for="adminPhone">Phone:</label>
+                <input type="text" id="adminPhone" required>
+            </div>
+            <div class="form-group">
+                <label for="adminAddress">Address:</label>
+                <input type="text" id="adminAddress" required>
+            </div>
+            <button class="add-admin-btn" onclick="addAdmin()">Submit</button>
+            <button class="add-admin-btn" onclick="hideAddAdminForm()">Cancel</button>
+        </div>
 
-        <!-- Users Table -->
-        <h2>Users</h2>
-        <table id="usersTable">
+        <!-- Admin Users Table -->
+        <h2>Admin Users List</h2>
+        <table id="adminUsersTable">
             <thead>
                 <tr>
                     <th>ID</th>
                     <th>Name</th>
                     <th>Email</th>
+                    <th>Phone</th>
+                    <th>Address</th>
                     <th>Actions</th>
                 </tr>
             </thead>
-            <tbody id="usersList"></tbody>
-        </table>
-
-        <!-- Companies Table -->
-        <h2>Companies</h2>
-        <table id="companiesTable">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Company Name</th>
-                    <th>Registration Number</th>
-                    <th>Is Verified</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody id="companiesList"></tbody>
-        </table>
-
-        <!-- Contacts Table -->
-        <h2>Contact Messages</h2>
-        <table id="contactsTable">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Message</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody id="contactsList"></tbody>
+            <tbody id="adminUsersList"></tbody>
         </table>
     </div>
 
     <script>
-        async function fetchUsers() {
+        async function fetchAdminUsers() {
             try {
                 const response = await fetch('/api/user/getusers');
-                if (!response.ok) throw new Error('Failed to fetch users');
-                const users = await response.json();
-                displayUsers(users);
+                if (!response.ok) throw new Error('Failed to fetch admin users');
+                const admins = await response.json();
+                displayAdminUsers(admins);
             } catch (error) {
-                console.error('Error fetching users:', error);
+                console.error('Error fetching admin users:', error);
             }
         }
 
-        function displayUsers(users) {
-            const usersList = document.getElementById('usersList');
-            usersList.innerHTML = '';
-            users.forEach(user => {
+        function displayAdminUsers(admins) {
+            const adminUsersList = document.getElementById('adminUsersList');
+            adminUsersList.innerHTML = '';
+            admins.forEach(admin => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                    <td>${user.id}</td>
-                    <td>${user.fullName}</td>
-                    <td>${user.email}</td>
+                    <td>${admin.id}</td>
+                    <td>${admin.fullName}</td>
+                    <td>${admin.email}</td>
+                    <td>${admin.phone || 'N/A'}</td>
+                    <td>${admin.address || 'N/A'}</td>
                     <td class="action-buttons">
-                        <button class="edit" onclick="editUser (${user.id})">Edit</button>
-                        <button class="delete" onclick="deleteUser (${user.id})">Delete</button>
+                        <button class="edit" onclick="editAdmin(${admin.id})">Edit</button>
+                        <button class="delete" onclick="deleteAdmin(${admin.id})">Delete</button>
                     </td>
                 `;
-                usersList.appendChild(row);
+                adminUsersList.appendChild(row);
             });
         }
 
-        async function fetchCompanies() {
+        function showAddAdminForm() {
+            document.getElementById('addAdminForm').style.display = 'block';
+        }
+
+        function hideAddAdminForm() {
+            document.getElementById('addAdminForm').style.display = 'none';
+        }
+
+        async function addAdmin() {
+            const name = document.getElementById('adminName').value;
+            const email = document.getElementById('adminEmail').value;
+            const password = document.getElementById('adminPassword').value;
+            const phone = document.getElementById('adminPhone').value;
+            const address = document.getElementById('adminAddress').value;
+
             try {
-                const response = await fetch('/api/company/getAllCompany');
-                if (!response.ok) throw new Error('Failed to fetch companies');
-                const companies = await response.json();
-                displayCompanies(companies);
-            } catch (error) {
-                console.error('Error fetching companies:', error);
-            }
-        }
-
-        function displayCompanies(companies) {
-            const companiesList = document.getElementById('companiesList');
-            companiesList.innerHTML = '';
-            companies.forEach(company => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${company.id}</td>
-                    <td>${company.companyName}</td>
-                    <td>${company.registrationNumber}</td>
-                    <td>
-                        <button class="verify" onclick="toggleVerification(${company.id}, ${company.isVerified})">
-                            ${company.isVerified ? 'Unverify' : 'Verify'}
-                        </button>
-                    </td>
-                    <td class="action-buttons">
-                        <button class="edit" onclick="editCompany(${company.id})">Edit</button>
-                        <button class="delete" onclick="deleteCompany(${company.id})">Delete</button>
-                    </td>
-                `;
-                companiesList.appendChild(row);
-            });
-        }
-
-        async function fetchContacts() {
-            try {
-                const response = await fetch('/api/contact/getAllContact');
-                if (!response.ok) throw new Error('Failed to fetch contacts');
-                const contacts = await response.json();
-                displayContacts(contacts);
-            } catch (error) {
-                console.error('Error fetching contacts:', error);
-            }
-        }
-
-        function displayContacts(contacts) {
-            const contactsList = document.getElementById('contactsList');
-            contactsList.innerHTML = '';
-            contacts.forEach(contact => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${contact.id}</td>
-                    <td>${contact.name}</td>
-                    <td>${contact.email}</td>
-                    <td>${contact.message}</td>
-                    <td class="action-buttons">
-                        <button class="delete" onclick="deleteContact(${contact.id})">Delete</button>
-                    </td>
-                `;
-                contactsList.appendChild(row);
-            });
-        }
-
-        async function toggleVerification(companyId, currentStatus) {
-            const newStatus = !currentStatus; // Toggle verification status
-            try {
-                const response = await fetch(`/api/company/updateVerification`, {
+                const response = await fetch('/api/user/addAdmin', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ companyId, isVerified: newStatus }),
+                    body: JSON.stringify({ 
+                        fullName: name, 
+                        email: email, 
+                        password: password, 
+                        phone: phone, 
+                        address: address 
+                    }),
                 });
-                if (!response.ok) throw new Error('Failed to update verification status');
-                fetchCompanies(); // Refresh the companies list
+                if (!response.ok) throw new Error('Failed to add admin');
+                fetchAdminUsers(); // Refresh the admin users list
+                hideAddAdminForm(); // Hide the form
             } catch (error) {
-                console.error('Error updating verification status:', error);
+                console.error('Error adding admin:', error);
             }
         }
 
-        function editUser (userId) {
-            // Implement edit user functionality
-            alert(`Edit user with ID: ${userId}`);
-        }
+        function editAdmin(adminId) {
+    // Get updated values from user input
+    const fullName = prompt("Enter new full name:");
+    const email = prompt("Enter new email:");
+    const password = prompt("Enter new password (leave blank to keep existing):");
+    const phone = prompt("Enter new phone:");
+    const address = prompt("Enter new address:");
 
-        function deleteUser (userId) {
-            // Implement delete user functionality
-            alert(`Delete user with ID: ${userId}`);
-        }
+    // Validate required fields
+    if (!fullName || !email) {
+        alert("Full name and email are required!");
+        return;
+    }
 
-        function editCompany(companyId) {
-            // Implement edit company functionality
-            alert(`Edit company with ID: ${companyId}`);
-        }
+    // Prepare updated data
+    const updatedData = {
+        fullName,
+        email,
+        phone,
+        address
+    };
 
-        function deleteCompany(companyId) {
-            // Implement delete company functionality
-            alert(`Delete company with ID: ${companyId}`);
-        }
+    // Include password only if provided
+    if (password && password.trim() !== "") {
+        updatedData.password = password;
+    }
 
-        function deleteContact(contactId) {
-            // Implement delete contact functionality
-            alert(`Delete contact with ID: ${contactId}`);
+    // Send update request
+    fetch(`/api/user/updateUser?id=${adminId}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedData),
+    })
+    .then(response => {
+        if (!response.ok) throw new Error('Failed to update admin');
+        return response.json();
+    })
+    .then(data => {
+        console.log("Admin updated successfully:", data);
+        alert("Admin updated successfully!");
+        fetchAdminUsers(); // Refresh the admin list
+    })
+    .catch(error => {
+        console.error('Error updating admin:', error);
+        alert("Error updating admin. Please try again.");
+    });
+}
+
+
+        function deleteAdmin(adminId) {
+            fetch(`/api/user/deletebyid?id=${adminId}`, 
+            {
+                method: 'DELETE',
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to delete admin');
+                fetchAdminUsers(); // Refresh the admin users list
+            })
+            .catch(error => {
+                console.error('Error deleting admin:', error);
+            });
         }
 
         // Fetch data when the page loads
         window.onload = () => {
-            fetchUsers();
-            fetchCompanies();
-            fetchContacts();
+            fetchAdminUsers();
         };
     </script>
 </body>

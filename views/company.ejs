@@ -125,6 +125,10 @@
             background-color: #fed6e3; /* Darker shade on hover */
         }
 
+        h1 {
+            text-align:center;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .sidebar {
@@ -163,7 +167,7 @@
                     <a href="/termsCompany">Terms & Conditions</a>
                 </li>
                 <li class="<%= (page === 'aboutme') ? 'active' : '' %>">
-                    <a href="/mePage">Me</a>
+                    <a href="meCompany">Me</a>
                 </li>
             </ul>
         </nav>
@@ -192,8 +196,7 @@
                 <input type="text" id="logoUrl" value="<%= company.logoUrl %>" placeholder="Logo URL" required>
                 <button onclick="updateCompany()">Update Company</button>
             </div>
-        <% } else { %>
-            <p>No company data available.</p>
+        <% } else if (userRole === 'company' && !hasCompany) { %>
             <div class="create-company-form">
                 <h3>Create Company</h3>
                 <input type="text" id="newCompanyName" placeholder="Company Name" required>
@@ -203,23 +206,27 @@
                 <input type="text" id="newLogoUrl" placeholder="Logo URL" required>
                 <button onclick="createCompany()">Create Company</button>
             </div>
+        <% } else { %>
+            <p>No company data available.</p>
         <% } %>
 
-        <div class="create-job-form">
-            <h3>Create Job</h3>
-            <input type="text" id="jobTitle" placeholder="Job Title" required>
-            <textarea id="jobDescription" placeholder="Job Description" required></textarea>
-            <input type="text" id="jobRequirements" placeholder="Job Requirements" required>
-            <input type="text" id="jobLocation" placeholder="Job Location" required>
-            <input type="text" id="salaryRange" placeholder="Salary Range" required>
-            <input type="text" id="jobType" placeholder="Job Type" required>
-            <input type="date" id="jobDeadline" placeholder="Deadline" required>
-            <select id="jobStatus">
-                <option value="Open">Open</option>
-                <option value="Closed">Closed</option>
-            </select>
-            <button onclick="createJob()">Create Job</button>
-        </div>
+        <% if (company) { %>
+            <div class="create-job-form">
+                <h3>Create Job</h3>
+                <input type="text" id="jobTitle" placeholder="Job Title" required>
+                <textarea id="jobDescription" placeholder="Job Description" required></textarea>
+                <input type="text" id="jobRequirements" placeholder="Job Requirements" required>
+                <input type="text" id="jobLocation" placeholder="Job Location" required>
+                <input type="text" id="salaryRange" placeholder="Salary Range" required>
+                <input type="text" id="jobType" placeholder="Job Type" required>
+                <input type="date" id="jobDeadline" placeholder="Deadline" required>
+                <select id="jobStatus">
+                    <option value="Open">Open</option>
+                    <option value="Closed">Closed</option>
+                </select>
+                <button onclick="createJob()">Create Job</button>
+            </div>
+        <% } %>
     </div>
 
     <script>
@@ -299,9 +306,20 @@
             const jobType = document.getElementById('jobType').value;
             const deadline = document.getElementById('jobDeadline').value;
             const status = document.getElementById('jobStatus').value;
+            
+            // Replace req.user.companyId with a valid source
+            const companyId = localStorage.getItem("companyId") || "your_company_id_here"; // Replace with actual ID
+
+            // Debugging: Check if function is called and values are retrieved
+            console.log("Creating Job with data:", { title, description, requirements, location, salaryRange, jobType, deadline, status, companyId });
+
+            if (!title || !description || !requirements || !location || !salaryRange || !jobType || !deadline || !status || !companyId) {
+                alert("Please fill all fields before submitting.");
+                return;
+            }
 
             try {
-                const response = await fetch('/api/job/createJob', {
+                const response = await fetch('/api/job/addjob', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -315,18 +333,23 @@
                         jobType,
                         deadline,
                         status,
-                        companyId: req.user.companyId // Use the company ID from the user token
+                        companyId
                     }),
                 });
 
+                console.log("Response received:", response);
+
                 if (!response.ok) {
-                    throw new Error('Failed to create job');
+                    const errorText = await response.text();
+                    throw new Error('Failed to create job: ' + errorText);
                 }
 
-                // Optionally, refresh the page or fetch the job data again
-                window.location.reload(); // Reload the page to show the new job data
+                alert("Job created successfully!");
+                window.location.reload(); // Reload page to update UI
+
             } catch (error) {
                 console.error('Error creating job:', error);
+                alert("Error creating job. Check console for details.");
             }
         }
     </script>

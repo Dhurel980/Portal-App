@@ -63,10 +63,21 @@
             width: calc(100% - 260px); /* Adjust for sidebar width */
         }
 
+        h1 {
+            text-align: center; /* Center the headline */
+            margin-bottom: 20px; /* Space below the headline */
+        }
+
+        /* Job List Styles */
+        .job-list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr); /* Two columns */
+            gap: 20px; /* Space between job cards */
+        }
+
         .job-card {
             background: #ffffff;
             padding: 20px;
-            margin-bottom: 20px;
             border-radius: 10px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
@@ -99,6 +110,10 @@
                 margin-left: 0;
                 padding: 15px;
             }
+
+            .job-list {
+                grid-template-columns: 1fr; /* One column on small screens */
+            }
         }
     </style>
 </head>
@@ -124,7 +139,7 @@
                         <a href="/termsCompany">Terms & Conditions</a>
                     </li>
                     <li class="<%= (page === 'aboutme') ? 'active' : '' %>">
-                        <a href="/mePage">Me</a>
+                        <a href="meCompany">Me</a>
                     </li>
                 </ul>
             </nav>
@@ -134,7 +149,7 @@
     <!-- Main Content -->
     <div id="content">
         <h1>Company Jobs</h1>
-        <div id="jobsList"></div>
+        <div class="job-list" id="jobsList"></div>
     </div>
 
     <script>
@@ -184,27 +199,27 @@
 
         // Function to update job status
         async function updateJobStatus(jobId, newStatus) {
-        console.log("Updating job:", jobId, "New Status:", newStatus); // Debugging log
+            console.log("Updating job:", jobId, "New Status:", newStatus); // Debugging log
 
-    try {
-        const response = await fetch(`/api/job/updatejobStatus`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ jobId, status: newStatus }),  // Ensure "jobId" is sent
-        });
+            try {
+                const response = await fetch(`/api/job/updatejobStatus`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ jobId, status: newStatus }),  // Ensure "jobId" is sent
+                });
 
-        if (!response.ok) {
-            throw new Error('Failed to update job status');
+                if (!response.ok) {
+                    throw new Error('Failed to update job status');
+                }
+
+                console.log("Job status updated successfully");
+                fetchCompanyJobs(); // Refresh job list
+            } catch (error) {
+                console.log('Error updating job status:', error);
+            }
         }
-
-        console.log("Job status updated successfully");
-        fetchCompanyJobs(); // Refresh job list
-    } catch (error) {
-        console.log('Error updating job status:', error);
-    }
-}
     
         // Fetch jobs when the page loads
         window.onload = fetchCompanyJobs;

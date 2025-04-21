@@ -12,7 +12,7 @@ const createCompany = async(req, res) => {
             website: data.website,
             logoUrl: data.logoUrl,
             isVerified: data.isVerified,
-            userId: req.user.id
+            userId: data.userId
         });
         res.status(201).json(company);
     } catch (error) {
@@ -48,6 +48,8 @@ const getAllCompany = async(req, res) => {
 const updateCompany = async (req, res) => {
     const id = req.user.companyId;
     const data = req.body;
+    console.log(id)
+    console.log(data)
     try {
         const company = await Company.findByPk(id);
         if (company){
@@ -58,24 +60,27 @@ const updateCompany = async (req, res) => {
                 website: data.website,
                 logoUrl: data.logoUrl,
                 userId: req.user.id
-            });
-            res.status(201).json(updateCompany);
+            },
+            { where: { id } }
+        );
+            res.status(200).json(updateCompany);
         } else {
             res.status(404).json({ message: `The updatation of ${id} id of Company is not completed`})
         }
     } catch (error) {
+        console.log(error)
         res.status(500).json({message: `An error has occured ! ${ error.message}`});
     }
 }
 
 const deleteCompanyById = async (req, res) => {
-    const id = req.params.id;
+    const id = req.query.id;
     try {
         const result = await Company.destroy({
-            where: {id:id}
+            where: { id:id }
         });
         if (result) {
-            res.status(201).json({ message: `Company with ${id} id has been deleted !`});
+            res.status(200).json({ message: `Company with ${id} id has been deleted !`});
         } else {
             res.status(404).json({ message: `Company with ${id} id is not deleted !`});
         }
@@ -85,23 +90,33 @@ const deleteCompanyById = async (req, res) => {
     }
 }
 
+
 const updateStatusById = async (req, res) => {
-    const id = req.params.id;
-    const data = req.body;
     try {
-        const company = await Company.findByPk(id);
-        if (company){
-            const updateCompany = await Company.update({
-                isVerified: data.isVerified
-            });
-            res.status(201).json(updateCompany);
-        } else {
-            res.status(404).json({ message: `The updatation of ${id} id of Company is not completed`})
+        const { companyId, isVerified } = req.body;
+        console.log("Received Company ID:", companyId, "New Status:", isVerified);
+
+        if (typeof isVerified !== 'boolean') {
+            return res.status(400).json({ error: "isVerified must be a boolean value" });
         }
+
+        const [updated] = await Company.update(
+            { isVerified }, 
+            { where: { id: companyId } }
+        );
+
+        if (updated === 0) {
+            return res.status(404).json({ error: "Company not found" });
+        }
+
+        res.json({ message: "Company verification status updated successfully" });
+
     } catch (error) {
-        res.status(500).json({message: `An error has occured ! ${ error.message}`});
+        console.error("Error updating verification:", error);
+        res.status(500).json({ message: `An error occurred! ${error.message}` });
     }
-}
+};
+
 
 module.exports = {
     createCompany,

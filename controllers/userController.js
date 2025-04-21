@@ -58,37 +58,40 @@ const getAllUser = async(req, res) => {
 	}
 }
 
-const updateUserById = async (req, res) => {
-	const id = req.query.id;
-	const data = req.body;
-	try {
-		const hashedpassword = hashedpass(data.password);
-		const user = await User.findByPk(id);
-		console.log("Password data:", data.password);
 
-		if (user){
-			const updateUser = await user.update({
-				email: data.email,
-				password: hashedpassword,
-				fullName: data.fullName,
-				phone: data.phone,
-				address: data.address
-			});
-			res.status(200).json(updateUser);
-		} else {
-			res.status(404).json({ message: `The updatation of ${id} id of User is not completed`})
-		}
-	} catch (error) {
-		console.log(error);
-		res.status(500).json({message: `An error has occured ! ${ error.message}`});
-	}
-}
+const updateUserById = async (req, res) => {
+    try {
+        const { fullName, email, password, phone, address } = req.body;
+        const userId = req.query.id;
+
+        // Prepare update data
+        let updatedData = { fullName, email, phone, address };
+
+        // Hash password only if a new one is provided
+        if (password && password.trim() !== "") {
+            updatedData.password = hashedpass(password); // Use the helper function
+        }
+
+        // Update user in MySQL
+        const [updated] = await User.update(updatedData, { where: { id: userId } });
+
+        if (updated === 0) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        res.json({ message: 'User updated successfully' });
+    } catch (error) {
+        console.error('Error updating user:', error);
+        res.status(500).json({ error: 'Failed to update user' });
+    }
+};
 
 const deleteUserById = async (req, res) => {
-	const id = req.params.id;
+	const id = req.query.id;
+	console.log(id);
 	try {
 		const result = await User.destroy({
-			where: {id:id}
+			where: { id:id }
 		});
 		if (result) {
 			res.status(201).json({ message: `User with ${id} id has been deleted !`});
