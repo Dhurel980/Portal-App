@@ -120,10 +120,6 @@ const renderDashbord = async (req, res) => {
     // }
 };
 
-const renderCreateTodoPage = (req, res) => {
-    res.render('jobappp');
-}
-
 const renderRegisterPage = async (req, res) => {
     res.render('regrestration');
 }
@@ -410,7 +406,6 @@ module.exports = {
     renderLoginPage,
     renderDashbord,
     renderRegisterPage,
-    renderCreateTodoPage,
     userLoginPage,
     renderjobapplicationPage,
     renderCompaniesPage,

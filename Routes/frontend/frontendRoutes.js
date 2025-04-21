@@ -9,7 +9,6 @@ const authMiddleware = require('../../middleware/authMiddleware');
 router.get('/login', loginController.renderLoginPage);
 router.get('/jobs', authMiddleware,loginController.userLoginPage);
 router.get('/register', loginController.renderRegisterPage);
-router.get('/createTodo', loginController.renderCreateTodoPage);
 router.get('/createCompany', loginController.renderCompanyRegisterPage);
 router.get('/userpage', authMiddleware,loginController.userLoginPage);
 
