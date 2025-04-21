@@ -70,4 +70,3 @@ after cloneing You can use any static server (like Live Server in VS Code):
 for database (in terminal) 
   npx sequelize db:migrate
 
-Some screenshots
