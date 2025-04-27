@@ -92,7 +92,4 @@ for running this Jobportal app into your VsCode
 
 4th then in terminal type npx sequelize db:migrate For migrating the database on your workbench
 
-5th After completion type npm start then in default browser check for the jobportal rendering
-
-6th for jobseeker and company the regrastration page mai milcha but for admin ko lagi first post man ma gare ra
-yo link halne http://localhost:8002/api/user/addAdmin post method ma hai ani login gare ra milcha pochi add garna admin
+5th After completion type npm start then in default browser check for the jobportal rendering.
