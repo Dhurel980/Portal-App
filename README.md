@@ -50,7 +50,7 @@ JobPortal/
 ├── package.json         # Project metadata and dependencies
 └── package-lock.json    # Lockfile for exact dependency versions
 
-
+Disclamer this is my assigment project not a fullfledge project.
 
 
 ---
@@ -93,3 +93,4 @@ for running this Jobportal app into your VsCode
 4th then in terminal type npx sequelize db:migrate For migrating the database on your workbench
 
 5th After completion type npm start then in default browser check for the jobportal rendering.
+
